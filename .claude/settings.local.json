@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(.venv/bin/pytest -q)",
-      "Bash(.venv/bin/ruff check *)"
+      "Bash(.venv/bin/ruff check *)",
+      "Bash(.venv/bin/hf upload-large-folder *)",
+      "Bash(.venv/bin/pip install *)",
+      "Bash(.venv/bin/python -c \"import hf_transfer; print\\('hf_transfer ready'\\)\")",
+      "Bash(chmod +x scripts/supervised_upload.sh)",
+      "Bash(zsh scripts/supervised_upload.sh)",
+      "Bash(grep -vE \"^\\\\s*$\")",
+      "Bash(pkill -9 -f upload-large-folder)",
+      "Bash(.venv/bin/python *)",
+      "Bash(git add *)",
+      "Bash(git -c 'user.name=Aykut Çayır' -c user.email=aykut.cayir@yandex.com commit -q -m 'Add self-healing HF upload supervisor for unstable networks *)",
+      "Bash(git -c http.postBuffer=157286400 push -q origin main)"
     ]
   }
 }
