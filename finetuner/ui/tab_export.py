@@ -31,7 +31,10 @@ def build(app):
 
         with gr.Group():
             gr.Markdown("**GGUF** — for llama.cpp / Ollama. "
-                        "⚠️ Requires a *non-quantized* base model (mlx-lm limitation).")
+                        "⚠️ mlx-lm's GGUF writer is currently unreliable (version drift, "
+                        "quantized bases unsupported). If this fails, use the proven recipe: "
+                        "`mlx_lm.fuse --dequantize` + llama.cpp's `convert_hf_to_gguf.py` "
+                        "(see README).")
             with gr.Row():
                 gguf_path = gr.Textbox(value="model_gguf", label="Directory", scale=3)
                 gguf_btn = gr.Button("🦙 Export GGUF", scale=1)

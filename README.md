@@ -56,6 +56,18 @@ confidence; 60 LoRA steps in 50 seconds, val loss 4.57 → 2.35).
 
 ![Live training monitor with loss curve](docs/screenshots/05_monitor_loss.png)
 
+## 🏆 Showcase
+
+Models trained with Finetuner Studio:
+
+- [`acayir64/Llama-3.2-1B-Instruct-Turkish-Alpaca-mlx`](https://huggingface.co/acayir64/Llama-3.2-1B-Instruct-Turkish-Alpaca-mlx)
+  — full TFLai/Turkish-Alpaca (51,914 rows), 2,000 LoRA steps in ~41 min on
+  Apple Silicon; merged bf16 model + all adapter checkpoints with per-checkpoint
+  losses in the model card.
+
+🕹️ **Live GUI demo** (no Mac needed):
+[huggingface.co/spaces/acayir64/finetuner-studio](https://huggingface.co/spaces/acayir64/finetuner-studio)
+
 ## 🚀 Quickstart
 
 ```bash

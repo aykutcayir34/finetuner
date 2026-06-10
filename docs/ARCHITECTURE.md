@@ -68,6 +68,11 @@ stdout/stderr into a ring buffer and parses `loss`/`step` with regexes
 (`jobs._LOSS_RE`). This is deliberately decoupled: if mlx-tune grows
 callbacks, only `training.run_training` changes.
 
+### ADR-5 · Module-level state, single user
+The Studio is a local single-user tool; `state.STATE` and `jobs.MANAGER` are
+process-global. A multi-user server would replace these with per-session
+state — isolated behind two small modules by design.
+
 ### ADR-6 · One persistent MLX engine thread
 MLX streams are **thread-local**: a model loaded on one (transient Gradio
 handler) thread cannot be trained or sampled from another — native training
@@ -79,10 +84,25 @@ which is the right policy on a single-device machine. The engine module also
 prepends the interpreter's bin dir to `PATH` so mlx-tune's `mlx_lm.lora`
 subprocess fallback works even when the venv isn't activated.
 
-### ADR-5 · Module-level state, single user
-The Studio is a local single-user tool; `state.STATE` and `jobs.MANAGER` are
-process-global. A multi-user server would replace these with per-session
-state — isolated behind two small modules by design.
+### ADR-7 · Gradio over Streamlit
+The GUI framework had two realistic candidates; Gradio won on architecture,
+not taste:
+
+- **Execution model.** Streamlit reruns the whole script top-to-bottom on
+  every interaction — hostile to a multi-gigabyte in-memory model and a
+  long-running training job. Gradio Blocks is event-driven: handlers fire per
+  event, process state persists naturally between interactions.
+- **Live monitoring.** `gr.Timer` + `gr.LinePlot` give a polling loss chart
+  with a few lines; Streamlit needs fragment/rerun workarounds for the same.
+- **ML-native components.** Chatbot, Dataframe preview, File upload and
+  Code viewer are first-class; the Playground is a single `gr.ChatInterface`.
+- **Ecosystem fit.** The platform is HF-centric (Hub models, Hub datasets,
+  Hub publishing); Gradio deploys to Hugging Face Spaces unchanged — the
+  planned GUI-only demo Space (see ROADMAP) is free.
+
+Trade-off accepted: Gradio's component API moves fast across major versions
+(we hit the Gradio 6 `theme`/`ChatInterface` changes during development);
+the UI layer is isolated in `finetuner/ui/` to contain that churn.
 
 ## Data flow of one training run
 
