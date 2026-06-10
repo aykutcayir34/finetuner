@@ -1,0 +1,2 @@
+{"conversations": [{"from": "human", "value": "MLX nedir?"}, {"from": "gpt", "value": "MLX, Apple'ın Apple Silicon için geliştirdiği, birleşik bellek mimarisinden faydalanan açık kaynak makine öğrenmesi çatısıdır."}]}
+{"conversations": [{"from": "human", "value": "What is unified memory?"}, {"from": "gpt", "value": "Unified memory lets the CPU and GPU share the same memory pool, avoiding costly data copies."}]}

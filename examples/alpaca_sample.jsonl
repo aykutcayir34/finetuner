@@ -1,0 +1,3 @@
+{"instruction": "İstanbul'un en bilinen tarihi yapısı nedir?", "input": "", "output": "İstanbul'un en bilinen tarihi yapılarından biri Ayasofya'dır; 537 yılında inşa edilmiştir."}
+{"instruction": "Aşağıdaki cümleyi İngilizceye çevir.", "input": "Bugün hava çok güzel.", "output": "The weather is very nice today."}
+{"instruction": "LoRA fine-tuning'i bir cümleyle açıkla.", "input": "", "output": "LoRA, büyük modelin ağırlıklarını dondurup küçük düşük-ranklı adaptör matrisleri eğiterek verimli ince ayar yapma yöntemidir."}

@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Training artifacts
+outputs/
+runs/
+lora_model/
+merged/
+*.gguf
+*.safetensors
+*.npz
+
+# Recipes & local state
+recipes/*.local.yaml
+.finetuner/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Test / lint caches
+.pytest_cache/
+.ruff_cache/
