@@ -4,10 +4,16 @@ from __future__ import annotations
 
 import gradio as gr
 
+from ..core.engine import ENGINE
 from ..core.state import STATE
 
 
 def _generate(message: str, history: list[dict], max_tokens: int, temperature: float) -> str:
+    # MLX generation must run on the engine thread (streams are thread-local).
+    return ENGINE.call(_generate_inner, message, history, max_tokens, temperature)
+
+
+def _generate_inner(message: str, history: list[dict], max_tokens: int, temperature: float) -> str:
     if STATE.model is None or STATE.tokenizer is None:
         return "⚠️ No model loaded — load one in the 🧠 Model tab first."
 

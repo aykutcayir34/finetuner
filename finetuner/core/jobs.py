@@ -99,9 +99,12 @@ class JobManager:
             job.started_at = time.time()
             tee_out = _Tee(job, __import__("sys").stdout)
             tee_err = _Tee(job, __import__("sys").stderr)
+            from .engine import ENGINE  # local import: keep jobs importable standalone
             try:
                 with contextlib.redirect_stdout(tee_out), contextlib.redirect_stderr(tee_err):
-                    target(job, *args, **kwargs)
+                    # All MLX work must run on the single engine thread; the
+                    # stdout redirect is process-wide, so logs still reach us.
+                    ENGINE.call(target, job, *args, **kwargs)
                 job.status = "stopped" if job.stop_event.is_set() else "finished"
             except Exception:
                 job.error = traceback.format_exc()

@@ -46,6 +46,16 @@ when you outgrow the GUI it hands you a clean, standalone Python script.
   Unsloth-compatible, so the same script moves to a cloud GPU unchanged.
 - **📜 Recipes** — save/load entire runs as shareable YAML.
 
+## 📸 In action
+
+Real run on an Apple Silicon Mac: Llama-3.2-1B-Instruct-4bit fine-tuned on
+`TFLai/Turkish-Alpaca` through the GUI (auto-detected as Alpaca at 95%
+confidence; 60 LoRA steps in 50 seconds, val loss 4.57 → 2.35).
+
+![Automatic dataset format detection](docs/screenshots/03_dataset_detected.png)
+
+![Live training monitor with loss curve](docs/screenshots/05_monitor_loss.png)
+
 ## 🚀 Quickstart
 
 ```bash

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/pytest -q)",
+      "Bash(.venv/bin/ruff check *)"
+    ]
+  }
+}

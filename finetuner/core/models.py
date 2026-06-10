@@ -6,6 +6,7 @@ from pathlib import Path
 
 from huggingface_hub import HfApi
 
+from .engine import ENGINE
 from .registry import get_task, resolve
 
 
@@ -45,7 +46,8 @@ def load_model(task_id: str, model_name: str, max_seq_length: int = 2048,
     if spec.modality == "text":
         kwargs["max_seq_length"] = max_seq_length
         kwargs["load_in_4bit"] = load_in_4bit
-    return loader.from_pretrained(model_name, **kwargs)
+    # MLX streams are thread-local — load on the engine thread (see engine.py).
+    return ENGINE.call(loader.from_pretrained, model_name, **kwargs)
 
 
 def apply_lora(task_id: str, model, r: int = 16, lora_alpha: int = 16,
@@ -60,8 +62,8 @@ def apply_lora(task_id: str, model, r: int = 16, lora_alpha: int = 16,
         kwargs["target_modules"] = list(target_modules)
     kwargs.update(extra)
     try:
-        return loader.get_peft_model(model, **kwargs)
+        return ENGINE.call(loader.get_peft_model, model, **kwargs)
     except TypeError:
         # Older mlx-tune versions may not accept every kwarg (e.g. lora_dropout).
         kwargs.pop("lora_dropout", None)
-        return loader.get_peft_model(model, **kwargs)
+        return ENGINE.call(loader.get_peft_model, model, **kwargs)

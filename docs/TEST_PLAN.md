@@ -22,6 +22,17 @@ The backend boundary (mlx-tune, Apple-Silicon-only) splits testing into:
 
 Run: `pip install -e '.[dev]' && pytest`
 
+## Automated on-device checks (Apple Silicon)
+
+- `scripts/smoke_sft.py` — headless E2E through the core stack: detection →
+  model+LoRA → 10-step SFT via the job manager → generation.
+- `scripts/gui_drive_turkish_sft.py` — Playwright drives the real GUI:
+  loads Llama-3.2-1B-Instruct-4bit, pulls `TFLai/Turkish-Alpaca` from the Hub,
+  verifies 95% Alpaca detection, trains 60 steps, checks the Monitor reaches
+  `finished`, and chats in the Playground. Screenshots land in
+  `docs/screenshots/`. (Requires `pip install playwright && playwright
+  install chromium` and a running `finetuner` server.)
+
 ## Manual smoke checklist (Apple Silicon, before each release)
 
 - [ ] `finetuner` launches; banner shows `🟢 mlx-tune ready`.

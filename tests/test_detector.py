@@ -86,6 +86,19 @@ def test_vision_chat():
     assert det.format == "vision_chat"
 
 
+def test_turkish_columns_with_messy_headers():
+    # Real-world case: merve/turkish_instructions has Turkish headers with
+    # leading spaces and an index column.
+    rows = [{"Unnamed: 0": "0", "talimat": "Bir şiir yaz", " giriş": "",
+             " çıktı": "Gökyüzü maviydi..."}]
+    det = detect(rows)
+    assert det.format == "alpaca"
+    assert det.mapping["instruction"] == "talimat"
+    assert det.mapping["output"] == " çıktı"
+    norm = normalize(rows, det, "sft")
+    assert "Gökyüzü" in norm[0]["text"]
+
+
 def test_empty():
     det = detect([])
     assert det.format == "unknown"

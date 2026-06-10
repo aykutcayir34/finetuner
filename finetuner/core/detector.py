@@ -9,23 +9,28 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-# Column-name synonyms, checked case-insensitively.
+# Column-name synonyms (English + Turkish), matched case-insensitively after
+# stripping whitespace — real-world CSV headers are messy.
 SYNONYMS = {
-    "instruction": {"instruction", "question", "query", "instruct", "task"},
-    "input": {"input", "context", "system"},
-    "output": {"output", "response", "answer", "completion", "target"},
-    "prompt": {"prompt", "question", "query", "instruction"},
-    "chosen": {"chosen", "preferred", "accepted", "good"},
-    "rejected": {"rejected", "dispreferred", "bad"},
-    "completion": {"completion", "response", "output", "answer"},
-    "label": {"label", "thumbs_up", "is_good", "score"},
-    "conversations": {"conversations", "messages", "dialogue", "dialog", "chat", "turns"},
-    "text": {"text", "content", "document", "body"},
-    "anchor": {"anchor", "query", "sentence1", "question"},
+    "instruction": {"instruction", "question", "query", "instruct", "task",
+                    "talimat", "soru", "görev"},
+    "input": {"input", "context", "system", "giriş", "girdi", "bağlam"},
+    "output": {"output", "response", "answer", "completion", "target",
+               "çıktı", "cevap", "yanıt"},
+    "prompt": {"prompt", "question", "query", "instruction", "istem", "soru"},
+    "chosen": {"chosen", "preferred", "accepted", "good", "seçilen", "tercih"},
+    "rejected": {"rejected", "dispreferred", "bad", "reddedilen"},
+    "completion": {"completion", "response", "output", "answer", "cevap", "yanıt"},
+    "label": {"label", "thumbs_up", "is_good", "score", "etiket"},
+    "conversations": {"conversations", "messages", "dialogue", "dialog", "chat",
+                      "turns", "konuşmalar", "mesajlar"},
+    "text": {"text", "content", "document", "body", "metin", "içerik"},
+    "anchor": {"anchor", "query", "sentence1", "question", "soru"},
     "positive": {"positive", "passage", "sentence2", "answer", "document"},
-    "audio": {"audio", "audio_path", "audio_filepath", "wav", "file", "path"},
-    "transcription": {"text", "transcription", "transcript", "sentence", "caption"},
-    "image": {"image", "images", "image_path", "img", "picture"},
+    "audio": {"audio", "audio_path", "audio_filepath", "wav", "file", "path", "ses"},
+    "transcription": {"text", "transcription", "transcript", "sentence", "caption",
+                      "metin", "cümle"},
+    "image": {"image", "images", "image_path", "img", "picture", "görsel", "resim"},
 }
 
 FORMAT_LABELS = {
@@ -60,7 +65,7 @@ class Detection:
 
 def _find(columns: list[str], canonical: str) -> str | None:
     """Find the actual column matching a canonical field name."""
-    lowered = {c.lower(): c for c in columns}
+    lowered = {c.strip().lower(): c for c in columns}
     if canonical in lowered:
         return lowered[canonical]
     for syn in SYNONYMS.get(canonical, ()):

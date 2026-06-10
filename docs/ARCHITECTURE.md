@@ -68,6 +68,17 @@ stdout/stderr into a ring buffer and parses `loss`/`step` with regexes
 (`jobs._LOSS_RE`). This is deliberately decoupled: if mlx-tune grows
 callbacks, only `training.run_training` changes.
 
+### ADR-6 · One persistent MLX engine thread
+MLX streams are **thread-local**: a model loaded on one (transient Gradio
+handler) thread cannot be trained or sampled from another — native training
+fails with *"There is no Stream(gpu, N) in current thread"*. Discovered live
+while driving the GUI with Playwright. All MLX work (load, LoRA, train,
+generate) is therefore funneled through a single long-lived engine thread
+(`core/engine.py`, `ENGINE.call`). Side benefit: GPU work is serialized,
+which is the right policy on a single-device machine. The engine module also
+prepends the interpreter's bin dir to `PATH` so mlx-tune's `mlx_lm.lora`
+subprocess fallback works even when the venv isn't activated.
+
 ### ADR-5 · Module-level state, single user
 The Studio is a local single-user tool; `state.STATE` and `jobs.MANAGER` are
 process-global. A multi-user server would replace these with per-session
@@ -90,9 +101,12 @@ state — isolated behind two small modules by design.
 
 | Thread | Work |
 |---|---|
-| Gradio event handlers | model load (blocking with progress), dataset IO, codegen |
-| `finetuner-job-N` daemon threads | `trainer.train()` with stdout tee |
+| Gradio event handlers | dataset IO, codegen, recipes; MLX calls forwarded to the engine |
+| `finetuner-mlx-engine` (singleton) | **all MLX work**: model load, LoRA, `trainer.train()`, generation (ADR-6) |
+| `finetuner-job-N` daemon threads | own the stdout tee + job bookkeeping; block on `ENGINE.call` |
 | Gradio timer | read-only snapshots of job state |
 
 Job state mutation is single-writer (the job thread); the UI only reads, so
-no locks are needed beyond the manager's id allocation lock.
+no locks are needed beyond the manager's id allocation lock. The stdout
+redirect is process-wide, so engine-thread prints still land in the
+requesting job's log buffer.
