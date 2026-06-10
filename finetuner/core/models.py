@@ -16,8 +16,12 @@ def search_hub_models(query: str, limit: int = 20, mlx_only: bool = True) -> lis
     api = HfApi()
     kwargs: dict = {"search": query, "limit": limit, "sort": "downloads"}
     if mlx_only:
-        kwargs["library"] = "mlx"
-    results = [m.id for m in api.list_models(**kwargs)]
+        kwargs["filter"] = "mlx"
+    try:
+        results = [m.id for m in api.list_models(**kwargs)]
+    except TypeError:  # huggingface_hub version drift on the filter kwarg
+        kwargs.pop("filter", None)
+        results = [m.id for m in api.list_models(**kwargs)]
     if not results and mlx_only:  # fall back to an unrestricted search
         results = [m.id for m in api.list_models(search=query, limit=limit, sort="downloads")]
     return results

@@ -10,6 +10,7 @@ where MLX is not installed.
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import platform
 from dataclasses import dataclass, field
 
